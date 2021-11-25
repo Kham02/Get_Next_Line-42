@@ -1,37 +1,67 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: estrong <estrong@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/24 01:48:01 by estrong           #+#    #+#             */
+/*   Updated: 2021/11/25 17:47:10 by estrong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
-
-char	*ft_get_line(char **line, size_t len)
+char	*ft_before(char	*line)
 {
-	char	*str;
-	char	*s2;
-	size_t	n;
+	int		i;
+	char	*s1;
 
-	if (len < 0)
-		return (0);
-	if (!len && (!line || !*line))
-		return (0);
-	n = 0;
-	str = NULL;
-	while ((*line)[n] != '\n' && (*line)[n])
-		n++;
-	if ((*line)[n] == '\n')
+	i = 0;
+	while (line[i] != '\n' && line[i])
+		i++;
+	if (line[i] == '\n')
+		i++;
+	s1 = ft_substr(line, 0, i);
+	return (s1);
+}
+
+char	*ft_after(char	*line)
+{
+	int		i;
+	char*	s2;
+
+	i = 0;
+	while (line[i] != '\n' && line[i])
+		i++;
+	if (line[i] == '\n')
+		i++;
+	s2 = ft_substr(line, i, ft_strlen(line));
+	free(line);
+	return (s2);
+}
+
+char	*ft_read(int fd, char *line, char *buf)
+{
+	int	n;
+
+	n = 1;
+	while (n != 0 && !ft_strchr(line, '\n'))
 	{
-		str = ft_substr(*line, 0, n + 1);
-		s2 = ft_strdup(*line + n + +1);
-		free(*line);
-		*line = s2;
-		if (!**line)
+		n = read(fd, buf, BUFFER_SIZE);
+		if (n < 0)
 		{
-			free(*line);
-			*line = NULL;
+			free(buf);
+			return (0);
 		}
-		return (str);
+		buf[n] = '\0';
+		if (!line)
+			line = ft_substr(buf, 0, n);
+		else
+			line = ft_strjoin(line, buf);
 	}
-	str = ft_strdup(*line);
-	free(*line);
-	*line = NULL;
-	return (str);
+	free(buf);
+	return (line);
 }
 
 char	*get_next_line(int fd)
@@ -39,42 +69,41 @@ char	*get_next_line(int fd)
 	static char	*line;
 	char		*buf;
 	char		*s;
-	size_t		len;
 
-	len = 0;
 	if (fd < 0 || BUFFER_SIZE < 1)
 		return (0);
 	buf = (char *)malloc(BUFFER_SIZE + 1);
 	if (!buf)
 		return(0);
-	len = read(fd, buf, BUFFER_SIZE);
-	while (len > 0)
+	line = ft_read(fd, line, buf);
+	if (!line || line[0] == '\0')
 	{
-		buf[len] = '\0';
-		if (!line)
-			line = ft_strdup("");
-		s = ft_strjoin(line, buf);
 		free(line);
-		line = s;
-		if (ft_strchr(buf, '\n'))
-			break;
-		len = read(fd, buf, BUFFER_SIZE);
+		line = 0;
+		return(0);
 	}
-	free(buf);
-	return(ft_get_line(&line, len));
+	s = ft_before(line);
+	if (!s || s[0] == '\0')
+	{
+		free(s);
+		return (0);
+	}
+	line = ft_after(line);
+	return (s);
 }
 
-int	main()
-{
-	char	*line;
-	int		fd;
+// int	main()
+// {
+// 	int		fd;
 
-	fd = open("test_text.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	return(0);
-}
+// 	fd = open("test_text.txt", O_RDONLY);
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	return(0);
+// }
