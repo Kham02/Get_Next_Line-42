@@ -6,7 +6,7 @@
 /*   By: estrong <estrong@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 01:48:01 by estrong           #+#    #+#             */
-/*   Updated: 2021/11/25 17:47:10 by estrong          ###   ########.fr       */
+/*   Updated: 2021/12/01 16:13:40 by estrong          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*ft_before(char	*line)
 char	*ft_after(char	*line)
 {
 	int		i;
-	char*	s2;
+	char	*s2;
 
 	i = 0;
 	while (line[i] != '\n' && line[i])
@@ -41,11 +41,15 @@ char	*ft_after(char	*line)
 	return (s2);
 }
 
-char	*ft_read(int fd, char *line, char *buf)
+char	*ft_read(int fd, char *line)
 {
-	int	n;
+	char	*buf;
+	int		n;
 
 	n = 1;
+	buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (!buf)
+		return (0);
 	while (n != 0 && !ft_strchr(line, '\n'))
 	{
 		n = read(fd, buf, BUFFER_SIZE);
@@ -67,20 +71,16 @@ char	*ft_read(int fd, char *line, char *buf)
 char	*get_next_line(int fd)
 {
 	static char	*line;
-	char		*buf;
 	char		*s;
 
 	if (fd < 0 || BUFFER_SIZE < 1)
 		return (0);
-	buf = (char *)malloc(BUFFER_SIZE + 1);
-	if (!buf)
-		return(0);
-	line = ft_read(fd, line, buf);
+	line = ft_read(fd, line);
 	if (!line || line[0] == '\0')
 	{
 		free(line);
 		line = 0;
-		return(0);
+		return (0);
 	}
 	s = ft_before(line);
 	if (!s || s[0] == '\0')
@@ -92,18 +92,34 @@ char	*get_next_line(int fd)
 	return (s);
 }
 
-// int	main()
-// {
-// 	int		fd;
+int	main()
+{
+	int		fd;
+	char	*s;
 
-// 	fd = open("test_text.txt", O_RDONLY);
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	return(0);
-// }
+	fd = open("test_text.txt", O_RDONLY);
+	s = get_next_line(fd);
+	printf("%s\n",s);
+	free(s);
+	s = get_next_line(fd);
+	printf("%s\n",s);
+	free(s);
+	s = get_next_line(fd);
+	printf("%s\n",s);
+	free(s);
+	s = get_next_line(fd);
+	printf("%s\n",s);
+	free(s);
+	s = get_next_line(fd);
+	printf("%s\n",s);
+	free(s);
+	s = get_next_line(fd);
+	printf("%s\n",s);
+	free(s);
+	while(1)
+	{
+		;
+	}
+	close(fd);
+	return (0);
+}
