@@ -92,34 +92,21 @@ char	*get_next_line(int fd)
 	return (s);
 }
 
+
 int	main()
 {
-	int		fd;
 	char	*s;
+	int		fd;
+	int		i;
 
-	fd = open("test_text.txt", O_RDONLY);
-	s = get_next_line(fd);
-	printf("%s\n",s);
-	free(s);
-	s = get_next_line(fd);
-	printf("%s\n",s);
-	free(s);
-	s = get_next_line(fd);
-	printf("%s\n",s);
-	free(s);
-	s = get_next_line(fd);
-	printf("%s\n",s);
-	free(s);
-	s = get_next_line(fd);
-	printf("%s\n",s);
-	free(s);
-	s = get_next_line(fd);
-	printf("%s\n",s);
-	free(s);
-	while(1)
+	i = 0;
+	fd = open("text.txt", O_RDONLY);
+	while (i < 4)
 	{
-		;
+		s = get_next_line(fd);
+		printf("%s", s);
+		free(s);
+		i++;
 	}
-	close(fd);
 	return (0);
 }
