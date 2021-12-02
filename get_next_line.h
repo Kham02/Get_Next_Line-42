@@ -22,7 +22,7 @@
 // # define BUFFER_SIZE 9
 
 char	*get_next_line(int fd);
-char	*ft_read(int fd, char *line, char *buf);
+char	*ft_read(int fd, char *line);
 char	*ft_before(char	*line);
 char	*ft_after(char	*line);
 
