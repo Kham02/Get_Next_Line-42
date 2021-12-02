@@ -108,5 +108,6 @@ int	main()
 		free(s);
 		i++;
 	}
+	close(fd);
 	return (0);
 }
